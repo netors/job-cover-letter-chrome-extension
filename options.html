@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Cover Letter Generator - Settings</title>
+  <link rel="stylesheet" href="css/options.css">
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <div class="logo">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+          <polyline points="14 2 14 8 20 8"></polyline>
+          <line x1="16" y1="13" x2="8" y2="13"></line>
+          <line x1="16" y1="17" x2="8" y2="17"></line>
+        </svg>
+        <h1>AI Cover Letter Generator Settings</h1>
+      </div>
+    </header>
+
+    <nav class="tabs">
+      <button class="tab-btn active" data-tab="api">API Configuration</button>
+      <button class="tab-btn" data-tab="personal">Personal Information</button>
+      <button class="tab-btn" data-tab="resume">Resume</button>
+      <button class="tab-btn" data-tab="preferences">Preferences</button>
+      <button class="tab-btn" data-tab="history">History</button>
+    </nav>
+
+    <main class="content">
+      <section id="apiTab" class="tab-content active">
+        <h2>API Configuration</h2>
+        
+        <div class="form-group">
+          <label for="provider">AI Provider</label>
+          <select id="provider">
+            <option value="openai" selected>OpenAI (GPT Models)</option>
+            <option value="claude">Anthropic (Claude Models)</option>
+          </select>
+          <p class="help-text">Choose your preferred AI provider</p>
+        </div>
+
+        <div id="openaiConfig" class="provider-config">
+          <div class="form-group">
+            <label for="openaiApiKey">OpenAI API Key</label>
+            <div class="input-group">
+              <input type="password" id="openaiApiKey" placeholder="sk-..." autocomplete="off">
+              <button id="toggleOpenAiApiKey" class="toggle-btn">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                  <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+              </button>
+            </div>
+            <p class="help-text">
+              Get your API key from <a href="https://platform.openai.com/api-keys" target="_blank">OpenAI Platform</a>
+            </p>
+          </div>
+
+          <div class="form-group">
+            <label for="openaiModel">OpenAI Model</label>
+            <select id="openaiModel">
+              <option value="gpt-4o">GPT-4o (Best quality)</option>
+              <option value="gpt-4o-mini" selected>GPT-4o Mini (Balanced)</option>
+              <option value="gpt-4-turbo">GPT-4 Turbo</option>
+              <option value="gpt-3.5-turbo">GPT-3.5 Turbo (Fastest)</option>
+            </select>
+            <p class="help-text">Higher quality models produce better results but cost more</p>
+          </div>
+
+          <div class="api-status">
+            <h4>OpenAI Connection Status</h4>
+            <div id="openaiStatusDisplay" class="status-display">
+              <span class="status-dot"></span>
+              <span class="status-text">Not configured</span>
+            </div>
+            <button id="testOpenaiBtn" class="secondary-btn">Test OpenAI Connection</button>
+          </div>
+        </div>
+
+        <div id="claudeConfig" class="provider-config" style="display: none;">
+          <div class="form-group">
+            <label for="claudeApiKey">Claude API Key</label>
+            <div class="input-group">
+              <input type="password" id="claudeApiKey" placeholder="sk-ant-api..." autocomplete="off">
+              <button id="toggleClaudeApiKey" class="toggle-btn">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                  <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+              </button>
+            </div>
+            <p class="help-text">
+              Get your API key from <a href="https://console.anthropic.com/" target="_blank">Anthropic Console</a>
+            </p>
+          </div>
+
+          <div class="form-group">
+            <label for="claudeModel">Claude Model</label>
+            <select id="claudeModel">
+              <option value="claude-3-5-sonnet-20241022" selected>Claude 3.5 Sonnet (Latest)</option>
+              <option value="claude-3-5-haiku-20241022">Claude 3.5 Haiku (Fast)</option>
+              <option value="claude-3-opus-20240229">Claude 3 Opus (Most Capable)</option>
+              <option value="claude-3-sonnet-20240229">Claude 3 Sonnet</option>
+              <option value="claude-3-haiku-20240307">Claude 3 Haiku</option>
+            </select>
+            <p class="help-text">Claude 3.5 Sonnet offers the best balance of capability and speed</p>
+          </div>
+
+          <div class="api-status">
+            <h4>Claude Connection Status</h4>
+            <div id="claudeStatusDisplay" class="status-display">
+              <span class="status-dot"></span>
+              <span class="status-text">Not configured</span>
+            </div>
+            <button id="testClaudeBtn" class="secondary-btn">Test Claude Connection</button>
+          </div>
+        </div>
+      </section>
+
+      <section id="personalTab" class="tab-content">
+        <h2>Personal Information</h2>
+        <p class="section-desc">This information will be included in your cover letters</p>
+        
+        <div class="form-group">
+          <label for="fullName">Full Name</label>
+          <input type="text" id="fullName" placeholder="John Doe">
+        </div>
+
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input type="email" id="email" placeholder="john.doe@example.com">
+        </div>
+
+        <div class="form-group">
+          <label for="phone">Phone</label>
+          <input type="tel" id="phone" placeholder="+1 (555) 123-4567">
+        </div>
+
+        <div class="form-group">
+          <label for="linkedin">LinkedIn Profile</label>
+          <input type="url" id="linkedin" placeholder="https://linkedin.com/in/johndoe">
+        </div>
+
+        <div class="form-group">
+          <label for="location">Location</label>
+          <input type="text" id="location" placeholder="San Francisco, CA">
+        </div>
+      </section>
+
+      <section id="resumeTab" class="tab-content">
+        <h2>Resume / Background</h2>
+        <p class="section-desc">Provide your resume or professional background to personalize cover letters</p>
+        
+        <div class="form-group">
+          <label for="resumeText">Resume Content</label>
+          <textarea id="resumeText" rows="15" placeholder="Paste your resume text here or describe your professional background, skills, experience, education, and achievements..."></textarea>
+          <p class="help-text">Include key achievements, skills, and experiences relevant to your target roles</p>
+        </div>
+
+        <div class="upload-section">
+          <h3>Or Upload Resume</h3>
+          <div class="upload-area" id="uploadArea">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="17 8 12 3 7 8"></polyline>
+              <line x1="12" y1="3" x2="12" y2="15"></line>
+            </svg>
+            <p>Drag & drop your resume or <button id="uploadBtn" class="link-btn">browse</button></p>
+            <input type="file" id="fileInput" accept=".txt,.pdf,.doc,.docx" style="display: none;">
+            <p class="file-types">Supported: TXT, PDF, DOC, DOCX</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="preferencesTab" class="tab-content">
+        <h2>Cover Letter Preferences</h2>
+        
+        <div class="form-group">
+          <label for="tone">Writing Tone</label>
+          <select id="tone">
+            <option value="professional">Professional - Formal and polished</option>
+            <option value="enthusiastic">Enthusiastic - Energetic and passionate</option>
+            <option value="concise">Concise - Direct and to the point</option>
+            <option value="friendly">Friendly - Warm and approachable</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="length">Cover Letter Length</label>
+          <select id="length">
+            <option value="short">Short (200-250 words)</option>
+            <option value="medium" selected>Medium (300-400 words)</option>
+            <option value="long">Long (450-500 words)</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Include Sections</label>
+          <div class="checkbox-group">
+            <label class="checkbox-label">
+              <input type="checkbox" id="includeMetrics" checked>
+              <span>Include quantifiable achievements</span>
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" id="includeKeywords" checked>
+              <span>Optimize for ATS keywords</span>
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" id="includeCallToAction" checked>
+              <span>Strong call to action</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="customInstructions">Custom Instructions</label>
+          <textarea id="customInstructions" rows="5" placeholder="Add any specific instructions for generating cover letters (e.g., emphasize leadership experience, focus on technical skills, etc.)"></textarea>
+        </div>
+      </section>
+
+      <section id="historyTab" class="tab-content">
+        <h2>Cover Letter History</h2>
+        
+        <div class="history-header">
+          <p class="section-desc">Your recently generated cover letters</p>
+          <button id="exportHistoryBtn" class="secondary-btn">Export All</button>
+        </div>
+
+        <div id="historyContainer" class="history-container">
+          <p class="loading">Loading history...</p>
+        </div>
+
+        <div class="history-actions">
+          <button id="clearAllHistoryBtn" class="danger-btn">Clear All History</button>
+        </div>
+
+        <div class="storage-usage">
+          <h3>Storage Usage</h3>
+          <div id="storageInfo" class="storage-info">
+            <p class="loading">Loading storage info...</p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="save-section">
+        <button id="saveBtn" class="primary-btn">Save Settings</button>
+        <span id="saveStatus" class="save-status"></span>
+      </div>
+      <div class="footer-links">
+        <a href="https://github.com/yourusername/ai-cover-letter" target="_blank">Documentation</a>
+        <a href="https://platform.openai.com/usage" target="_blank">API Usage</a>
+        <span class="version">v1.0.0</span>
+      </div>
+    </footer>
+  </div>
+
+  <div id="notification" class="notification"></div>
+  
+  <script src="js/options.js"></script>
+</body>
+</html>

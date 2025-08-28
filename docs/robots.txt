@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://netors.github.io/job-cover-letter-chrome-extension/sitemap.xml

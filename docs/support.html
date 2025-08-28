@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Support & FAQ - AI Cover Letter Generator</title>
+    <meta name="description" content="Get help with AI Cover Letter Generator Chrome extension. Setup guides, troubleshooting, and frequently asked questions.">
+    <link rel="canonical" href="https://netors.github.io/job-cover-letter-chrome-extension/support.html">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f8f9ff;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-align: center;
+            padding: 60px 0;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .nav {
+            background: white;
+            padding: 20px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .nav-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+        
+        .nav a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+            padding: 8px 16px;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+        
+        .nav a:hover {
+            background: #f0f4ff;
+            color: #4f46e5;
+        }
+        
+        .content {
+            background: white;
+            margin: 40px 0;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .section {
+            padding: 40px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .section:last-child {
+            border-bottom: none;
+        }
+        
+        .section h2 {
+            font-size: 2rem;
+            margin-bottom: 2rem;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .section h3 {
+            font-size: 1.3rem;
+            margin: 2rem 0 1rem 0;
+            color: #667eea;
+        }
+        
+        .faq-item {
+            margin-bottom: 2rem;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .faq-question {
+            background: #f8f9ff;
+            padding: 20px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+        
+        .faq-question:hover {
+            background: #f0f4ff;
+        }
+        
+        .faq-answer {
+            padding: 20px;
+            display: none;
+            background: white;
+        }
+        
+        .faq-answer.active {
+            display: block;
+        }
+        
+        .code {
+            background: #1a1a1a;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 16px 0;
+            overflow-x: auto;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 14px;
+        }
+        
+        .alert {
+            padding: 16px;
+            border-radius: 8px;
+            margin: 16px 0;
+        }
+        
+        .alert-info {
+            background: #e7f3ff;
+            border: 1px solid #b3d9ff;
+            color: #1a5490;
+        }
+        
+        .alert-warning {
+            background: #fff8e7;
+            border: 1px solid #ffd700;
+            color: #8b5a00;
+        }
+        
+        .alert-success {
+            background: #e7f8e7;
+            border: 1px solid #66cc66;
+            color: #2d5a2d;
+        }
+        
+        .steps {
+            counter-reset: step-counter;
+        }
+        
+        .step {
+            counter-increment: step-counter;
+            margin: 1.5rem 0;
+            padding: 20px;
+            background: #f8f9ff;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+            position: relative;
+        }
+        
+        .step::before {
+            content: counter(step-counter);
+            position: absolute;
+            left: -12px;
+            top: 16px;
+            background: #667eea;
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            background: #667eea;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin-top: 1rem;
+        }
+        
+        .btn:hover {
+            background: #5a6fd8;
+            transform: translateY(-2px);
+        }
+        
+        .contact-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        
+        .contact-card {
+            background: #f8f9ff;
+            padding: 24px;
+            border-radius: 12px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .contact-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.15);
+        }
+        
+        .contact-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .nav-links {
+                flex-direction: column;
+                align-items: center;
+                gap: 1rem;
+            }
+            
+            .section {
+                padding: 30px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <h1>Support & FAQ</h1>
+            <p>Everything you need to get the most out of AI Cover Letter Generator</p>
+        </div>
+    </header>
+
+    <!-- Navigation -->
+    <nav class="nav">
+        <div class="container">
+            <div class="nav-links">
+                <a href="#setup">Getting Started</a>
+                <a href="#faq">FAQ</a>
+                <a href="#troubleshooting">Troubleshooting</a>
+                <a href="#contact">Contact</a>
+                <a href="index.html">← Back to Home</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- Setup Guide -->
+        <div class="content">
+            <section class="section" id="setup">
+                <h2><span>🚀</span> Getting Started</h2>
+                
+                <div class="alert alert-info">
+                    <strong>Quick Start:</strong> The extension is super easy to set up. You'll need an API key from either OpenAI or Claude (or both for maximum flexibility).
+                </div>
+
+                <h3>Step-by-Step Setup</h3>
+                <div class="steps">
+                    <div class="step">
+                        <strong>Install the Extension</strong>
+                        <p>Add it to Chrome from the Chrome Web Store (coming soon) or load it manually in developer mode.</p>
+                    </div>
+                    
+                    <div class="step">
+                        <strong>Get Your API Key</strong>
+                        <p>Choose your AI provider:</p>
+                        <ul style="margin-top: 12px;">
+                            <li><strong>OpenAI:</strong> Visit <a href="https://platform.openai.com/api-keys" target="_blank">platform.openai.com/api-keys</a></li>
+                            <li><strong>Claude:</strong> Visit <a href="https://console.anthropic.com/keys" target="_blank">console.anthropic.com/keys</a></li>
+                        </ul>
+                    </div>
+                    
+                    <div class="step">
+                        <strong>Configure the Extension</strong>
+                        <p>Click the extension icon → Settings gear → Add your API key → Test connection</p>
+                    </div>
+                    
+                    <div class="step">
+                        <strong>Add Your Info</strong>
+                        <p>Upload your resume and fill in your contact details. This makes the cover letters personalized.</p>
+                    </div>
+                    
+                    <div class="step">
+                        <strong>Start Generating!</strong>
+                        <p>Go to any job site, find a job you like, click the extension icon, and hit "Generate Cover Letter"</p>
+                    </div>
+                </div>
+
+                <div class="alert alert-success">
+                    <strong>Pro Tip:</strong> Set up both OpenAI and Claude APIs. If one is down or you hit rate limits, you can instantly switch to the other!
+                </div>
+            </section>
+
+            <!-- FAQ -->
+            <section class="section" id="faq">
+                <h2><span>❓</span> Frequently Asked Questions</h2>
+
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        <span>How much does this cost?</span>
+                        <span>+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>The extension is completely free! You only pay for the AI API usage, which is typically:</p>
+                        <ul>
+                            <li><strong>OpenAI GPT-4o-mini:</strong> ~$0.01-0.03 per cover letter</li>
+                            <li><strong>OpenAI GPT-4o:</strong> ~$0.05-0.15 per cover letter</li>
+                            <li><strong>Claude 3.5 Sonnet:</strong> ~$0.03-0.08 per cover letter</li>
+                            <li><strong>Claude 3 Haiku:</strong> ~$0.01-0.03 per cover letter</li>
+                        </ul>
+                        <p>Way cheaper than subscription services that charge $10-30/month!</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        <span>Which job sites does it work on?</span>
+                        <span>+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Pretty much everywhere! I've tested it on:</p>
+                        <ul>
+                            <li>LinkedIn Jobs</li>
+                            <li>Indeed</li>
+                            <li>Glassdoor</li>
+                            <li>Monster</li>
+                            <li>ZipRecruiter</li>
+                            <li>AngelList/Wellfound</li>
+                            <li>Company career pages</li>
+                            <li>University job boards</li>
+                            <li>Government job sites</li>
+                        </ul>
+                        <p>If it has a job description on the page, the extension can probably read it!</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        <span>Is my data secure?</span>
+                        <span>+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Absolutely! Here's how your data is handled:</p>
+                        <ul>
+                            <li><strong>API Keys:</strong> Stored locally in Chrome's encrypted storage</li>
+                            <li><strong>Personal Info:</strong> Never leaves your browser except for AI API calls</li>
+                            <li><strong>Job Data:</strong> Processed temporarily, not stored permanently</li>
+                            <li><strong>No Tracking:</strong> Zero analytics, no data collection</li>
+                            <li><strong>Open Source:</strong> You can see exactly what the code does</li>
+                        </ul>
+                        <p>I built this for myself first - privacy was a top priority.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        <span>Can I customize the writing style?</span>
+                        <span>+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Yes! The extension offers several options:</p>
+                        <ul>
+                            <li><strong>Writing Tone:</strong> Professional, Enthusiastic, Concise, or Friendly</li>
+                            <li><strong>Length:</strong> Short, Medium, or Detailed</li>
+                            <li><strong>Custom Instructions:</strong> Add your own guidance in settings</li>
+                            <li><strong>Multiple Models:</strong> Different AI models have different writing styles</li>
+                        </ul>
+                        <p>You can also regenerate letters with different settings until you find one you love.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        <span>What if the cover letter is terrible?</span>
+                        <span>+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>I won't lie - sometimes the AI has an off day. Here's what to do:</p>
+                        <ul>
+                            <li><strong>Try a different model:</strong> Switch from GPT-4o-mini to GPT-4o or Claude</li>
+                            <li><strong>Update your resume:</strong> More detailed resume = better letters</li>
+                            <li><strong>Add custom instructions:</strong> Tell the AI what to emphasize</li>
+                            <li><strong>Edit the output:</strong> The generated text is fully editable</li>
+                            <li><strong>Regenerate:</strong> Hit the button again for a fresh attempt</li>
+                        </ul>
+                        <p>In my experience, GPT-4o and Claude 3.5 Sonnet produce the best results.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        <span>Can I use this for other types of writing?</span>
+                        <span>+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Technically yes, but it's really optimized for cover letters. The extension:</p>
+                        <ul>
+                            <li>Looks specifically for job descriptions</li>
+                            <li>Uses prompts designed for cover letter writing</li>
+                            <li>Includes resume context automatically</li>
+                            <li>Formats output as business letters</li>
+                        </ul>
+                        <p>If you need other types of AI writing, I'd recommend using ChatGPT or Claude directly.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Troubleshooting -->
+            <section class="section" id="troubleshooting">
+                <h2><span>🔧</span> Troubleshooting</h2>
+
+                <h3>Extension Not Detecting Jobs</h3>
+                <div class="alert alert-warning">
+                    <strong>Most Common Issue:</strong> This usually happens on dynamic job sites that load content after the page loads.
+                </div>
+                
+                <p><strong>Try this:</strong></p>
+                <ul>
+                    <li>Refresh the page after it fully loads</li>
+                    <li>Wait a few seconds, then click the extension icon</li>
+                    <li>Use the "🔄 Force Re-detect" button in the popup</li>
+                    <li>Make sure you're on the actual job description page, not search results</li>
+                </ul>
+
+                <h3>API Errors</h3>
+                <div class="code">
+Error: Invalid API key
+Error: Rate limit exceeded
+Error: Insufficient quota
+                </div>
+
+                <p><strong>Solutions:</strong></p>
+                <ul>
+                    <li><strong>Invalid API key:</strong> Double-check you copied the key correctly</li>
+                    <li><strong>Rate limits:</strong> Wait a few minutes or switch to the other AI provider</li>
+                    <li><strong>Insufficient quota:</strong> Add billing to your OpenAI/Claude account</li>
+                </ul>
+
+                <h3>Generated Letters Are Generic</h3>
+                <p>This usually means your resume isn't detailed enough. Try:</p>
+                <ul>
+                    <li>Adding specific achievements with numbers</li>
+                    <li>Including relevant skills and technologies</li>
+                    <li>Adding custom instructions about what to emphasize</li>
+                    <li>Using GPT-4o or Claude 3.5 Sonnet for higher quality</li>
+                </ul>
+
+                <h3>PDF Download Not Working</h3>
+                <p>This is usually a browser popup blocker issue:</p>
+                <ul>
+                    <li>Allow popups for the job site domain</li>
+                    <li>Try right-clicking the PDF button and "Save link as"</li>
+                    <li>Copy the text and paste into Google Docs, then export as PDF</li>
+                </ul>
+
+                <div class="alert alert-info">
+                    <strong>Still having issues?</strong> Check the browser console (F12 → Console) for error messages, then contact support with the details.
+                </div>
+            </section>
+
+            <!-- Contact -->
+            <section class="section" id="contact">
+                <h2><span>💬</span> Get Help</h2>
+                
+                <p>I'm just one person maintaining this project, but I try to help when I can!</p>
+
+                <div class="contact-options">
+                    <div class="contact-card">
+                        <span class="contact-icon">🐛</span>
+                        <h3>Found a Bug?</h3>
+                        <p>Report issues, crashes, or weird behavior on GitHub. Include screenshots and browser console errors if possible.</p>
+                        <a href="https://github.com/netors/job-cover-letter-chrome-extension/issues" class="btn" target="_blank">Report Bug</a>
+                    </div>
+
+                    <div class="contact-card">
+                        <span class="contact-icon">💡</span>
+                        <h3>Feature Ideas?</h3>
+                        <p>Got an idea to make this better? Open a feature request! I actually read and consider them all.</p>
+                        <a href="https://github.com/netors/job-cover-letter-chrome-extension/issues" class="btn" target="_blank">Suggest Feature</a>
+                    </div>
+
+                    <div class="contact-card">
+                        <span class="contact-icon">🤝</span>
+                        <h3>Want to Contribute?</h3>
+                        <p>This is open source! Feel free to submit pull requests, fix bugs, or improve documentation.</p>
+                        <a href="https://github.com/netors/job-cover-letter-chrome-extension" class="btn" target="_blank">View GitHub</a>
+                    </div>
+                </div>
+
+                <div class="alert alert-info" style="margin-top: 2rem;">
+                    <strong>Response Time:</strong> I usually respond to GitHub issues within a few days. For urgent bugs, add "URGENT" to your issue title.
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <script>
+        function toggleFAQ(element) {
+            const answer = element.nextElementSibling;
+            const icon = element.querySelector('span:last-child');
+            
+            if (answer.classList.contains('active')) {
+                answer.classList.remove('active');
+                icon.textContent = '+';
+            } else {
+                // Close all other FAQs
+                document.querySelectorAll('.faq-answer').forEach(el => {
+                    el.classList.remove('active');
+                });
+                document.querySelectorAll('.faq-question span:last-child').forEach(el => {
+                    el.textContent = '+';
+                });
+                
+                // Open this FAQ
+                answer.classList.add('active');
+                icon.textContent = '−';
+            }
+        }
+
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('.nav a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        console.log('🆘 Support page loaded - AI Cover Letter Generator');
+    </script>
+</body>
+</html>

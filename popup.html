@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Cover Letter Generator</title>
+  <link rel="stylesheet" href="css/popup.css">
+</head>
+<body>
+  <div class="popup-container">
+    <header class="header">
+      <div class="logo">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+          <polyline points="14 2 14 8 20 8"></polyline>
+          <line x1="16" y1="13" x2="8" y2="13"></line>
+          <line x1="16" y1="17" x2="8" y2="17"></line>
+        </svg>
+        <h1>Cover Letter AI</h1>
+      </div>
+      <button id="settingsBtn" class="icon-btn" title="Settings">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="3"></circle>
+          <path d="M12 1v6m0 6v6m4.22-13.22l4.24 4.24M1.54 9.54l4.24 4.24M20.46 14.46l-4.24 4.24M7.78 7.78L3.54 3.54"></path>
+        </svg>
+      </button>
+    </header>
+
+    <main class="main-content">
+      <div id="statusSection" class="status-section">
+        <div class="status-card">
+          <div class="status-indicator" id="statusIndicator"></div>
+          <p id="statusText">Checking page...</p>
+        </div>
+      </div>
+
+      <div id="actionSection" class="action-section" style="display: none;">
+        <div class="job-detection">
+          <h3>Job Detected</h3>
+          <div class="job-info" id="jobInfo">
+            <p><strong>Title:</strong> <span id="jobTitle">-</span></p>
+            <p><strong>Company:</strong> <span id="jobCompany">-</span></p>
+          </div>
+        </div>
+
+        <div class="generation-options">
+          <div class="option-group">
+            <label for="providerSelect">AI Provider</label>
+            <select id="providerSelect">
+              <option value="openai">OpenAI</option>
+              <option value="claude">Claude</option>
+            </select>
+          </div>
+          <div class="option-group">
+            <label for="modelSelect">Model</label>
+            <select id="modelSelect">
+              <option value="gpt-4o-mini">GPT-4o Mini</option>
+            </select>
+          </div>
+        </div>
+
+        <button id="generateBtn" class="primary-btn">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5z"></path>
+          </svg>
+          Generate Cover Letter
+        </button>
+
+        <button id="extractBtn" class="secondary-btn">
+          View Extracted Data
+        </button>
+        
+        <button id="forceDetectBtn" class="secondary-btn">
+          🔄 Force Re-detect
+        </button>
+      </div>
+
+      <div id="noJobSection" class="no-job-section" style="display: none;">
+        <div class="empty-state">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <circle cx="11" cy="11" r="8"></circle>
+            <path d="m21 21-4.35-4.35"></path>
+          </svg>
+          <h3>No Job Description Detected</h3>
+          <p>Navigate to a job listing page to generate a cover letter</p>
+          <div class="supported-sites">
+            <p>Supported sites include:</p>
+            <ul>
+              <li>LinkedIn Jobs</li>
+              <li>Indeed</li>
+              <li>Glassdoor</li>
+              <li>Company career pages</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div id="historySection" class="history-section">
+        <div class="section-header">
+          <h3>Recent Cover Letters</h3>
+          <button id="clearHistoryBtn" class="text-btn">Clear All</button>
+        </div>
+        <div id="historyList" class="history-list"></div>
+      </div>
+
+      <div id="resultSection" class="result-section" style="display: none;">
+        <div class="result-header">
+          <h3>Generated Cover Letter</h3>
+          <button id="closeResultBtn" class="icon-btn">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </div>
+        <div id="coverLetterContent" class="cover-letter-content" contenteditable="true"></div>
+        <div class="result-actions">
+          <button id="copyBtn" class="action-btn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+            </svg>
+            Copy
+          </button>
+          <button id="downloadBtn" class="action-btn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="7 10 12 15 17 10"></polyline>
+              <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+            Download
+          </button>
+          <button id="regenerateBtn" class="action-btn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="23 4 23 10 17 10"></polyline>
+              <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+            </svg>
+            Regenerate
+          </button>
+        </div>
+      </div>
+
+      <div id="extractedDataSection" class="extracted-data-section" style="display: none;">
+        <div class="result-header">
+          <h3>Extracted Job Data</h3>
+          <button id="closeExtractedBtn" class="icon-btn">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </div>
+        <div id="extractedDataContent" class="extracted-data-content"></div>
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="stats">
+        <span id="apiStatus" class="status-badge">
+          <span class="dot"></span>
+          API Status
+        </span>
+        <span id="usageCount">0 letters generated</span>
+      </div>
+    </footer>
+  </div>
+  
+  <script src="js/popup.js"></script>
+</body>
+</html>

@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Cover Letter Generator - Chrome Extension</title>
+    <meta name="description" content="Generate personalized cover letters from any job description using OpenAI and Claude AI. Free Chrome extension that works on LinkedIn, Indeed, and 100+ job sites.">
+    <link rel="canonical" href="https://netors.github.io/job-cover-letter-chrome-extension/">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E") repeat;
+        }
+        
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            max-width: 800px;
+        }
+        
+        .hero h1 {
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            margin-bottom: 1rem;
+            font-weight: 700;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+        
+        .hero p {
+            font-size: clamp(1.1rem, 2vw, 1.3rem);
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+        
+        .cta-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 3rem;
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            font-size: 16px;
+            font-weight: 600;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn-primary {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 2px solid rgba(255,255,255,0.3);
+            backdrop-filter: blur(10px);
+        }
+        
+        .btn-primary:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary {
+            background: white;
+            color: #667eea;
+            border: 2px solid white;
+        }
+        
+        .btn-secondary:hover {
+            background: #f8f9ff;
+            transform: translateY(-2px);
+        }
+        
+        .features {
+            background: white;
+            padding: 80px 0;
+        }
+        
+        .features h2 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 3rem;
+            color: #333;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+        
+        .feature {
+            text-align: center;
+            padding: 2rem;
+            border-radius: 12px;
+            background: #f8f9ff;
+            transition: transform 0.3s ease;
+        }
+        
+        .feature:hover {
+            transform: translateY(-5px);
+        }
+        
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+        
+        .feature h3 {
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+            color: #333;
+        }
+        
+        .feature p {
+            color: #666;
+            line-height: 1.5;
+        }
+        
+        .story {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            padding: 80px 0;
+            color: white;
+        }
+        
+        .story-content {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        
+        .story h2 {
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .story p {
+            font-size: 1.1rem;
+            margin-bottom: 1.5rem;
+            opacity: 0.9;
+        }
+        
+        .stats {
+            background: #1a1a1a;
+            padding: 60px 0;
+            color: white;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            text-align: center;
+        }
+        
+        .stat h3 {
+            font-size: 3rem;
+            color: #667eea;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat p {
+            color: #ccc;
+        }
+        
+        .footer {
+            background: #333;
+            padding: 40px 0;
+            color: white;
+            text-align: center;
+        }
+        
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+        
+        .footer a {
+            color: #667eea;
+            text-decoration: none;
+        }
+        
+        .footer a:hover {
+            color: #9c88ff;
+        }
+        
+        @media (max-width: 768px) {
+            .hero {
+                padding: 40px 0;
+            }
+            
+            .cta-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .btn {
+                width: 100%;
+                max-width: 300px;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1>AI Cover Letter Generator</h1>
+                <p>Honestly? I got tired of writing cover letters. So I built this thing that uses AI to generate them instantly from any job description. Turns out it's pretty useful - thought I'd share! 🚀</p>
+                
+                <div class="cta-buttons">
+                    <a href="#" class="btn btn-primary">
+                        <span>🔗</span>
+                        Add to Chrome (Coming Soon)
+                    </a>
+                    <a href="https://github.com/netors/job-cover-letter-chrome-extension" class="btn btn-secondary">
+                        <span>⭐</span>
+                        View on GitHub
+                    </a>
+                </div>
+                
+                <p style="font-size: 0.9rem; opacity: 0.7;">Works with OpenAI & Claude • 100+ Job Sites • Totally Free</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features">
+        <div class="container">
+            <h2>Why I Built This</h2>
+            
+            <div class="features-grid">
+                <div class="feature">
+                    <span class="feature-icon">🤖</span>
+                    <h3>Smart & Fast</h3>
+                    <p>Uses OpenAI and Claude to write personalized cover letters in seconds. No more staring at blank pages wondering what to say.</p>
+                </div>
+                
+                <div class="feature">
+                    <span class="feature-icon">🌐</span>
+                    <h3>Works Everywhere</h3>
+                    <p>LinkedIn, Indeed, Glassdoor, company websites - if there's a job posting, this extension can read it and generate a letter.</p>
+                </div>
+                
+                <div class="feature">
+                    <span class="feature-icon">📄</span>
+                    <h3>Actually Professional</h3>
+                    <p>Generates real cover letters, not generic templates. Downloads as PDF, saves your history, and actually sounds like you wrote it.</p>
+                </div>
+                
+                <div class="feature">
+                    <span class="feature-icon">🔒</span>
+                    <h3>Your Data Stays Yours</h3>
+                    <p>API keys stored locally, no tracking, no data harvesting. Open source so you can see exactly what it does.</p>
+                </div>
+                
+                <div class="feature">
+                    <span class="feature-icon">⚡</span>
+                    <h3>Zero Setup Hassle</h3>
+                    <p>Add your API key, paste your resume once, and you're done. The extension handles the rest automatically.</p>
+                </div>
+                
+                <div class="feature">
+                    <span class="feature-icon">💰</span>
+                    <h3>Stupid Cheap</h3>
+                    <p>Costs like $0.02 per cover letter with your own OpenAI/Claude API. Way cheaper than subscription services.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Story Section -->
+    <section class="story">
+        <div class="container">
+            <div class="story-content">
+                <h2>The Real Story</h2>
+                <p>I was applying to jobs and realized I was spending hours crafting cover letters for each application. Some were good, others... not so much. But I was using ChatGPT anyway to help brainstorm ideas.</p>
+                
+                <p>Then it hit me: why not just automate this? I'm already copy-pasting job descriptions into ChatGPT, then tweaking the output. Why not make it seamless?</p>
+                
+                <p>So I built this Chrome extension over a weekend. It automatically grabs job details from any job site, sends them to AI (your choice of OpenAI or Claude), and generates a tailored cover letter instantly.</p>
+                
+                <p>I've been using it for months and it's honestly a game-changer. Friends started asking for it, so here we are. Hope it helps you land that dream job! ✨</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="stats">
+        <div class="container">
+            <div class="stats-grid">
+                <div class="stat">
+                    <h3>100+</h3>
+                    <p>Job Sites Supported</p>
+                </div>
+                <div class="stat">
+                    <h3>2</h3>
+                    <p>AI Providers (OpenAI & Claude)</p>
+                </div>
+                <div class="stat">
+                    <h3>$0.02</h3>
+                    <p>Average Cost Per Letter</p>
+                </div>
+                <div class="stat">
+                    <h3>∞</h3>
+                    <p>Hours Saved</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-links">
+                <a href="support.html">Support & FAQ</a>
+                <a href="https://github.com/netors/job-cover-letter-chrome-extension">GitHub</a>
+                <a href="https://github.com/netors/job-cover-letter-chrome-extension/issues">Report Issues</a>
+                <a href="privacy.html">Privacy Policy</a>
+            </div>
+            <p>&copy; 2024 AI Cover Letter Generator • Made with ☕ and frustration with manual cover letter writing</p>
+        </div>
+    </footer>
+
+    <!-- Simple Analytics (Optional) -->
+    <script>
+        // Add Google Analytics or similar here if needed
+        console.log('🚀 AI Cover Letter Generator - Landing Page Loaded');
+        
+        // Simple interaction tracking
+        document.querySelectorAll('.btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                console.log('Button clicked:', e.target.textContent);
+            });
+        });
+    </script>
+</body>
+</html>

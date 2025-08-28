@@ -1,0 +1,85 @@
+{
+  "name": "ai-cover-letter-generator",
+  "version": "1.0.0",
+  "description": "Chrome extension that generates personalized cover letters from job descriptions using OpenAI and Claude AI",
+  "main": "manifest.json",
+  "scripts": {
+    "build": "node create-icons.js",
+    "dev": "echo 'Load extension in Chrome developer mode - see CONTRIBUTING.md for setup'",
+    "test": "echo 'Manual testing required - see CONTRIBUTING.md for test checklist'",
+    "lint": "echo 'Manual code review - follow style guide in CONTRIBUTING.md'",
+    "package": "zip -r ai-cover-letter-generator.zip . -x '*.git*' 'node_modules/*' '*.DS_Store*' 'create-icons.js' 'package*.json' 'test-storage.js' 'DEBUG.md' 'GENERATION_DEBUG.md' 'INSTALLATION.md' 'INSTRUCTIONS_FOR_IMPROVEMENTS.md' 'PERSISTENCE_TESTING.md' 'STORAGE_QUOTA_FIX.md'",
+    "clean": "rm -f *.debug.md test-storage.js",
+    "prepare-release": "npm run clean && npm run build && npm run package"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yourusername/ai-cover-letter-generator.git"
+  },
+  "keywords": [
+    "chrome-extension",
+    "cover-letter",
+    "ai",
+    "openai",
+    "claude",
+    "anthropic",
+    "job-search",
+    "automation",
+    "career",
+    "linkedin",
+    "indeed",
+    "glassdoor",
+    "job-application",
+    "resume",
+    "gpt",
+    "chatgpt"
+  ],
+  "author": "AI Cover Letter Generator Team",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/yourusername/ai-cover-letter-generator/issues"
+  },
+  "homepage": "https://github.com/yourusername/ai-cover-letter-generator#readme",
+  "dependencies": {
+    "sharp": "^0.34.3"
+  },
+  "manifest": {
+    "manifest_version": 3,
+    "name": "AI Cover Letter Generator",
+    "version": "1.0.0",
+    "description": "Generate personalized cover letters from job descriptions using AI",
+    "permissions": [
+      "storage",
+      "activeTab",
+      "tabs",
+      "scripting"
+    ]
+  },
+  "chrome_extension": {
+    "id": "",
+    "key": "",
+    "update_url": ""
+  },
+  "features": [
+    "Automatic job description detection",
+    "OpenAI GPT integration",
+    "Personalized cover letter generation",
+    "Multiple writing tones and styles",
+    "Resume upload and management",
+    "Cover letter history and export",
+    "Works on all major job sites"
+  ],
+  "supported_sites": [
+    "linkedin.com",
+    "indeed.com",
+    "glassdoor.com",
+    "monster.com",
+    "ziprecruiter.com",
+    "angellist.com",
+    "dice.com",
+    "careerbuilder.com",
+    "greenhouse.io",
+    "lever.co",
+    "workday.com"
+  ]
+}

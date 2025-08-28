@@ -1,0 +1,248 @@
+.ai-cover-letter-button {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  width: 60px;
+  height: 60px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);
+  z-index: 999999;
+  transition: all 0.3s ease;
+  opacity: 0;
+  transform: scale(0.8);
+  color: white;
+}
+
+.ai-cover-letter-button.visible {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.ai-cover-letter-button:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 30px rgba(102, 126, 234, 0.5);
+}
+
+.ai-cover-letter-button.loading {
+  pointer-events: none;
+  background: #94a3b8;
+}
+
+.ai-cover-letter-button .tooltip {
+  position: absolute;
+  right: 70px;
+  background: #1e293b;
+  color: white;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 14px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+.ai-cover-letter-button:hover .tooltip {
+  opacity: 1;
+}
+
+.ai-cover-letter-button .spinner {
+  width: 24px;
+  height: 24px;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.ai-cover-letter-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999999;
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+.ai-cover-letter-modal .modal-content {
+  background: white;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 800px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.ai-cover-letter-modal .modal-header {
+  padding: 20px;
+  border-bottom: 1px solid #e5e7eb;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.ai-cover-letter-modal .modal-header h2 {
+  margin: 0;
+  color: #1e293b;
+  font-size: 20px;
+}
+
+.ai-cover-letter-modal .close-btn {
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: #64748b;
+  cursor: pointer;
+  padding: 0;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  transition: all 0.2s;
+}
+
+.ai-cover-letter-modal .close-btn:hover {
+  background: #f1f5f9;
+  color: #1e293b;
+}
+
+.ai-cover-letter-modal .modal-body {
+  padding: 20px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.ai-cover-letter-modal .job-info {
+  background: #f8fafc;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.ai-cover-letter-modal .job-info p {
+  margin: 5px 0;
+  color: #475569;
+  font-size: 14px;
+}
+
+.ai-cover-letter-modal .job-info strong {
+  color: #1e293b;
+  margin-right: 8px;
+}
+
+.ai-cover-letter-modal .cover-letter-content {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 20px;
+  min-height: 300px;
+  line-height: 1.6;
+  color: #1e293b;
+  font-size: 15px;
+  white-space: pre-wrap;
+}
+
+.ai-cover-letter-modal .cover-letter-content:focus {
+  outline: 2px solid #667eea;
+  outline-offset: -2px;
+}
+
+.ai-cover-letter-modal .modal-footer {
+  padding: 20px;
+  border-top: 1px solid #e5e7eb;
+  display: flex;
+  gap: 10px;
+}
+
+.ai-cover-letter-modal .btn {
+  padding: 10px 20px;
+  border-radius: 6px;
+  border: none;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: inherit;
+}
+
+.ai-cover-letter-modal .btn-copy {
+  background: #667eea;
+  color: white;
+}
+
+.ai-cover-letter-modal .btn-copy:hover {
+  background: #5a67d8;
+}
+
+.ai-cover-letter-modal .btn-download {
+  background: #10b981;
+  color: white;
+}
+
+.ai-cover-letter-modal .btn-download:hover {
+  background: #059669;
+}
+
+.ai-cover-letter-modal .btn-regenerate {
+  background: #f59e0b;
+  color: white;
+}
+
+.ai-cover-letter-modal .btn-regenerate:hover {
+  background: #d97706;
+}
+
+.ai-notification {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  padding: 15px 20px;
+  border-radius: 8px;
+  font-family: system-ui, -apple-system, sans-serif;
+  font-size: 14px;
+  z-index: 10000000;
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: all 0.3s;
+  max-width: 400px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.ai-notification.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.ai-notification.success {
+  background: #10b981;
+  color: white;
+}
+
+.ai-notification.error {
+  background: #ef4444;
+  color: white;
+}
+
+.ai-notification.info {
+  background: #3b82f6;
+  color: white;
+}

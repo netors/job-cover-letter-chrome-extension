@@ -1,0 +1,46 @@
+# GitHub Pages Configuration for AI Cover Letter Generator
+title: AI Cover Letter Generator
+description: Chrome Extension that generates personalized cover letters from job descriptions using OpenAI and Claude AI
+url: "https://netors.github.io"
+baseurl: "/job-cover-letter-chrome-extension"
+
+# Repository information
+github:
+  repository_name: job-cover-letter-chrome-extension
+  repository_url: https://github.com/netors/job-cover-letter-chrome-extension
+  
+# Social links
+social:
+  github: netors
+
+# SEO and meta tags
+lang: en-US
+author: netors
+
+# Build settings
+markdown: kramdown
+highlighter: rouge
+
+# Plugins
+plugins:
+  - jekyll-sitemap
+  - jekyll-feed
+
+# Exclude from processing
+exclude:
+  - README.md
+  - node_modules
+  - package.json
+  - package-lock.json
+  - .gitignore
+
+# Collections (if needed in future)
+collections: null
+
+# Default layout for pages
+defaults:
+  - scope:
+      path: ""
+      type: "pages"
+    values:
+      layout: "default"
