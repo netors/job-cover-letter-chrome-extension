@@ -100,9 +100,12 @@ jobs:
 
       - name: Install dependencies
         run: |
-          npm ci --only=production
-          # Install sharp if not in package.json
-          npm install sharp
+          # Use npm ci to avoid modifying package-lock.json
+          npm ci
+          # Install sharp separately if not in package.json
+          if ! npm list sharp --depth=0 >/dev/null 2>&1; then
+            npm install sharp --no-save
+          fi
 
       - name: Generate icons
         run: |

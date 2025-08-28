@@ -66,8 +66,12 @@ jobs:
 
       - name: Install dependencies
         run: |
-          npm ci --only=production
-          npm install sharp
+          # Use npm ci to avoid modifying package-lock.json
+          npm ci
+          # Install sharp separately if not in package.json
+          if ! npm list sharp --depth=0 >/dev/null 2>&1; then
+            npm install sharp --no-save
+          fi
 
       - name: Build extension
         run: |
@@ -116,15 +120,30 @@ jobs:
           VERSION="${{ github.event.inputs.version }}"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git config --global user.name "github-actions[bot]"
+          
+          # Check for changes and add them
           git add manifest.json
-          git commit -m "Release v$VERSION
+          
+          # Add package-lock.json if it was modified by npm install
+          if git diff --name-only | grep -q "package-lock.json"; then
+            echo "📦 Adding updated package-lock.json"
+            git add package-lock.json
+          fi
+          
+          # Only commit if there are changes to commit
+          if git diff --staged --quiet; then
+            echo "ℹ️ No changes to commit"
+          else
+            git commit -m "Release v$VERSION
 
           🚀 Automated version bump for release
           
           - Updated manifest.json version to $VERSION
+          - Updated package-lock.json (if changed)
           - Ready for Chrome Web Store submission
           
           Co-authored-by: github-actions[bot] <github-actions[bot]@users.noreply.github.com>"
+          fi
           
       - name: Push changes
         uses: ad-m/github-push-action@master
