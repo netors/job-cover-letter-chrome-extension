@@ -481,8 +481,12 @@ class JobDetector {
 
 const detector = new JobDetector();
 
+// Set flag to indicate manual injection
+window.aiCoverLetterExtensionInjected = true;
+
 // Wait for DOM and handle dynamic content loading
 function initializeDetector() {
+  console.log('🚀 Content script manually injected - running job detection immediately');
   detector.detectJobDescription();
   
   // For LinkedIn, also check after additional delays since content loads dynamically
@@ -499,14 +503,15 @@ function initializeDetector() {
   }
 }
 
-// Multiple initialization strategies
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', () => {
-    setTimeout(initializeDetector, 1000);
-  });
-} else {
-  setTimeout(initializeDetector, 1000);
-}
+// For manual injection, run immediately regardless of document state
+console.log('📋 Content script loaded, initializing detector...');
+initializeDetector();
+
+// Also run after a short delay to catch dynamic content
+setTimeout(() => {
+  console.log('🔄 Running delayed detection for dynamic content...');
+  detector.detectJobDescription();
+}, 500);
 
 // Also listen for URL changes (for SPAs like LinkedIn)
 let currentUrl = location.href;
