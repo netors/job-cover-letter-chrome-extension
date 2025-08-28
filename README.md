@@ -1,6 +1,6 @@
 # AI Cover Letter Generator Chrome Extension
 
-🚀 **[Live Demo & Documentation](https://netors.github.io/job-cover-letter-chrome-extension/)** • 📖 **[Support & FAQ](https://netors.github.io/job-cover-letter-chrome-extension/support.html)**
+🚀 **[Live Demo & Documentation](https://netors.github.io/job-cover-letter-chrome-extension/)** • 📖 **[Support & FAQ](https://netors.github.io/job-cover-letter-chrome-extension/support.html)** • 🔄 **[Release Guide](RELEASE_GUIDE.md)**
 
 A powerful Chrome extension that automatically generates personalized cover letters from job descriptions using cutting-edge AI technology from OpenAI and Anthropic.
 
@@ -297,12 +297,19 @@ node create-icons.js
 
 ## Contributing
 
-We welcome contributions! Please:
+We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines.
+
+### Quick Start for Contributors
 1. Fork the repository
 2. Create a feature branch
 3. Make your changes
-4. Add tests if applicable
+4. Update version in `manifest.json` (triggers automated builds)
 5. Submit a pull request
+
+### Release Process
+- 🚀 **[Release Guide](RELEASE_GUIDE.md)** - Complete guide for creating releases
+- 🤖 **Automated Builds** - GitHub Actions builds extension automatically on version bumps
+- 📦 **Easy Distribution** - Download ready-to-install packages from releases
 
 ### Areas for Contribution
 - Additional job site support
