@@ -5,16 +5,19 @@
   "main": "manifest.json",
   "scripts": {
     "build": "node create-icons.js",
-    "dev": "echo 'Load extension in Chrome developer mode - see CONTRIBUTING.md for setup'",
-    "test": "echo 'Manual testing required - see CONTRIBUTING.md for test checklist'",
+    "dev": "echo 'Load extension in Chrome developer mode - see README.md for setup'",
+    "test": "echo 'Manual testing required - see support page for test checklist'",
     "lint": "echo 'Manual code review - follow style guide in CONTRIBUTING.md'",
-    "package": "zip -r ai-cover-letter-generator.zip . -x '*.git*' 'node_modules/*' '*.DS_Store*' 'create-icons.js' 'package*.json' 'test-storage.js' 'DEBUG.md' 'GENERATION_DEBUG.md' 'INSTALLATION.md' 'INSTRUCTIONS_FOR_IMPROVEMENTS.md' 'PERSISTENCE_TESTING.md' 'STORAGE_QUOTA_FIX.md'",
-    "clean": "rm -f *.debug.md test-storage.js",
-    "prepare-release": "npm run clean && npm run build && npm run package"
+    "package": "npm run clean && npm run build && npm run create-zip",
+    "create-zip": "zip -r ai-cover-letter-generator-v$(jq -r '.version' manifest.json).zip manifest.json popup.html options.html js/ css/ icons/ -x '*.DS_Store' '*/.DS_Store' '*/Thumbs.db' '**/*.log' '**/*.tmp' '**/*.backup' 'icons/*.svg'",
+    "clean": "rm -f *.debug.md test-storage.js DEBUG.md GENERATION_DEBUG.md INSTALLATION.md INSTRUCTIONS_FOR_IMPROVEMENTS.md PERSISTENCE_TESTING.md STORAGE_QUOTA_FIX.md",
+    "prepare-release": "npm run package && echo 'Extension packaged and ready for release!'",
+    "validate": "jq . manifest.json > /dev/null && echo 'Manifest JSON is valid'",
+    "version-check": "echo 'Current version:' $(jq -r '.version' manifest.json)"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/yourusername/ai-cover-letter-generator.git"
+    "url": "git+https://github.com/netors/job-cover-letter-chrome-extension.git"
   },
   "keywords": [
     "chrome-extension",
@@ -34,12 +37,12 @@
     "gpt",
     "chatgpt"
   ],
-  "author": "AI Cover Letter Generator Team",
+  "author": "netors",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/yourusername/ai-cover-letter-generator/issues"
+    "url": "https://github.com/netors/job-cover-letter-chrome-extension/issues"
   },
-  "homepage": "https://github.com/yourusername/ai-cover-letter-generator#readme",
+  "homepage": "https://netors.github.io/job-cover-letter-chrome-extension/",
   "dependencies": {
     "sharp": "^0.34.3"
   },
