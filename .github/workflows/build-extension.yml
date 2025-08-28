@@ -1,0 +1,275 @@
+name: Build Chrome Extension
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'manifest.json'
+      - 'js/**'
+      - 'css/**'
+      - 'popup.html'
+      - 'options.html'
+      - 'icons/**'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'manifest.json'
+      - 'js/**'
+      - 'css/**'
+      - 'popup.html'
+      - 'options.html'
+      - 'icons/**'
+  workflow_dispatch:
+
+jobs:
+  detect-version:
+    name: Detect Version Change
+    runs-on: ubuntu-latest
+    outputs:
+      version_changed: ${{ steps.version_check.outputs.version_changed }}
+      new_version: ${{ steps.version_check.outputs.new_version }}
+      should_release: ${{ steps.version_check.outputs.should_release }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Check version change
+        id: version_check
+        run: |
+          # Get current version from manifest.json
+          CURRENT_VERSION=$(jq -r '.version' manifest.json)
+          echo "Current version: $CURRENT_VERSION"
+          
+          # Check if this is a PR or push to main
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            echo "This is a PR - checking for version bump"
+            
+            # Get the version from the base branch
+            git checkout HEAD~1 -- manifest.json 2>/dev/null || echo "No previous manifest.json found"
+            PREV_VERSION=$(jq -r '.version' manifest.json 2>/dev/null || echo "0.0.0")
+            
+            # Restore current manifest.json
+            git checkout HEAD -- manifest.json
+            
+            echo "Previous version: $PREV_VERSION"
+            echo "Current version: $CURRENT_VERSION"
+            
+            if [ "$CURRENT_VERSION" != "$PREV_VERSION" ]; then
+              echo "Version changed from $PREV_VERSION to $CURRENT_VERSION"
+              echo "version_changed=true" >> $GITHUB_OUTPUT
+              echo "new_version=$CURRENT_VERSION" >> $GITHUB_OUTPUT
+              echo "should_release=false" >> $GITHUB_OUTPUT
+            else
+              echo "No version change detected"
+              echo "version_changed=false" >> $GITHUB_OUTPUT
+              echo "new_version=$CURRENT_VERSION" >> $GITHUB_OUTPUT
+              echo "should_release=false" >> $GITHUB_OUTPUT
+            fi
+          else
+            echo "This is a push to main - will create release if version is valid"
+            echo "version_changed=true" >> $GITHUB_OUTPUT
+            echo "new_version=$CURRENT_VERSION" >> $GITHUB_OUTPUT
+            echo "should_release=true" >> $GITHUB_OUTPUT
+          fi
+
+  build:
+    name: Build Extension
+    runs-on: ubuntu-latest
+    needs: detect-version
+    if: needs.detect-version.outputs.version_changed == 'true'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: |
+          npm ci --only=production
+          # Install sharp if not in package.json
+          npm install sharp
+
+      - name: Generate icons
+        run: |
+          echo "🎨 Generating Chrome extension icons..."
+          node create-icons.js
+
+      - name: Validate manifest
+        run: |
+          echo "🔍 Validating manifest.json..."
+          # Check that manifest.json is valid JSON
+          jq . manifest.json > /dev/null
+          
+          # Extract version for validation
+          VERSION=$(jq -r '.version' manifest.json)
+          echo "Extension version: $VERSION"
+          
+          # Validate version format (x.y.z)
+          if [[ ! "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "❌ Invalid version format: $VERSION (expected: x.y.z)"
+            exit 1
+          fi
+          
+          echo "✅ Manifest validation passed"
+
+      - name: Clean development files
+        run: |
+          echo "🧹 Cleaning development files..."
+          # Remove development and debug files
+          rm -f test-storage.js
+          rm -f *.debug.md
+          rm -f DEBUG.md GENERATION_DEBUG.md INSTALLATION.md
+          rm -f INSTRUCTIONS_FOR_IMPROVEMENTS.md PERSISTENCE_TESTING.md
+          rm -f STORAGE_QUOTA_FIX.md
+          
+          # Remove build tools (keep for users who clone)
+          # rm -f create-icons.js
+          
+          # Clean up any temporary files
+          find . -name "*.tmp" -delete
+          find . -name "*.temp" -delete
+          
+          echo "✅ Cleanup completed"
+
+      - name: Create extension package
+        run: |
+          echo "📦 Creating extension package..."
+          VERSION=$(jq -r '.version' manifest.json)
+          PACKAGE_NAME="ai-cover-letter-generator-v${VERSION}.zip"
+          
+          # Create zip with all necessary files
+          zip -r "$PACKAGE_NAME" \
+            manifest.json \
+            popup.html \
+            options.html \
+            js/ \
+            css/ \
+            icons/ \
+            -x "*.DS_Store" "*/.DS_Store" "*/Thumbs.db" \
+            -x "js/*.backup" "js/*.tmp" \
+            -x "icons/*.svg" \
+            -x "**/*.log"
+            
+          echo "📊 Package contents:"
+          unzip -l "$PACKAGE_NAME"
+          
+          echo "📈 Package size:"
+          ls -lh "$PACKAGE_NAME"
+          
+          # Validate package size (should be under 50MB for Chrome Web Store)
+          SIZE=$(stat -f%z "$PACKAGE_NAME" 2>/dev/null || stat -c%s "$PACKAGE_NAME")
+          MAX_SIZE=$((50 * 1024 * 1024))  # 50MB in bytes
+          
+          if [ "$SIZE" -gt "$MAX_SIZE" ]; then
+            echo "❌ Package too large: ${SIZE} bytes (max: ${MAX_SIZE} bytes)"
+            exit 1
+          fi
+          
+          echo "✅ Package created successfully: $PACKAGE_NAME"
+          echo "PACKAGE_NAME=$PACKAGE_NAME" >> $GITHUB_ENV
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: chrome-extension-v${{ env.VERSION }}
+          path: ${{ env.PACKAGE_NAME }}
+          retention-days: 30
+
+      - name: Create release (main branch only)
+        if: needs.detect-version.outputs.should_release == 'true' && github.ref == 'refs/heads/main'
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ env.VERSION }}
+          release_name: Chrome Extension v${{ env.VERSION }}
+          body: |
+            ## AI Cover Letter Generator v${{ env.VERSION }}
+            
+            🚀 **Ready for Chrome Web Store submission!**
+            
+            ### 📦 Installation
+            1. Download the `ai-cover-letter-generator-v${{ env.VERSION }}.zip` file
+            2. Extract the zip file
+            3. Open Chrome and go to `chrome://extensions/`
+            4. Enable "Developer mode" (top right toggle)
+            5. Click "Load unpacked" and select the extracted folder
+            
+            ### 🔗 Links
+            - 📚 [Setup Guide](https://netors.github.io/job-cover-letter-chrome-extension/support.html)
+            - 🏠 [Project Website](https://netors.github.io/job-cover-letter-chrome-extension/)
+            - 🐛 [Report Issues](https://github.com/netors/job-cover-letter-chrome-extension/issues)
+            
+            ### ⚠️ Requirements
+            - You need your own OpenAI or Anthropic API key
+            - Chrome browser with developer mode enabled
+            
+            ### 🔄 Changes
+            See the [CHANGELOG](https://github.com/netors/job-cover-letter-chrome-extension/blob/main/README.md#-changelog) for detailed changes in this version.
+            
+            ---
+            
+            **Built with GitHub Actions** 🤖
+          draft: false
+          prerelease: false
+
+      - name: Upload release asset
+        if: needs.detect-version.outputs.should_release == 'true' && github.ref == 'refs/heads/main'
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ${{ env.PACKAGE_NAME }}
+          asset_name: ${{ env.PACKAGE_NAME }}
+          asset_content_type: application/zip
+
+  comment-pr:
+    name: Comment on PR
+    runs-on: ubuntu-latest
+    needs: [detect-version, build]
+    if: github.event_name == 'pull_request' && needs.detect-version.outputs.version_changed == 'true'
+    
+    steps:
+      - name: Comment on PR
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const version = '${{ needs.detect-version.outputs.new_version }}';
+            
+            const comment = `## 🎉 Version Bump Detected!
+            
+            New version: \`v${version}\`
+            
+            ✅ Extension build completed successfully!
+            📦 Artifact: \`chrome-extension-v${version}\`
+            
+            ### Next Steps:
+            1. **Merge this PR** to automatically create a GitHub release
+            2. **Download** the extension package from the release
+            3. **Test** the extension before Chrome Web Store submission
+            
+            ### Testing Checklist:
+            - [ ] Extension loads without errors
+            - [ ] Job detection works on LinkedIn/Indeed
+            - [ ] Cover letter generation works with OpenAI/Claude
+            - [ ] PDF download functions properly
+            - [ ] Settings save correctly
+            - [ ] History management works
+            
+            The extension package will be available in the [Artifacts section](${context.payload.pull_request.html_url}/checks) of this PR.`;
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });

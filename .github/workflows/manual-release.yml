@@ -1,0 +1,153 @@
+name: Manual Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to release (e.g., 1.0.1)'
+        required: true
+        type: string
+      prerelease:
+        description: 'Mark as prerelease'
+        required: false
+        default: false
+        type: boolean
+
+jobs:
+  manual-release:
+    name: Create Manual Release
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Validate version format
+        run: |
+          VERSION="${{ github.event.inputs.version }}"
+          if [[ ! "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "❌ Invalid version format: $VERSION (expected: x.y.z)"
+            exit 1
+          fi
+          echo "✅ Version format valid: $VERSION"
+
+      - name: Update manifest version
+        run: |
+          VERSION="${{ github.event.inputs.version }}"
+          echo "📝 Updating manifest.json version to $VERSION"
+          
+          # Update version in manifest.json
+          jq ".version = \"$VERSION\"" manifest.json > manifest.json.tmp
+          mv manifest.json.tmp manifest.json
+          
+          # Verify the change
+          NEW_VERSION=$(jq -r '.version' manifest.json)
+          if [ "$NEW_VERSION" != "$VERSION" ]; then
+            echo "❌ Failed to update version in manifest.json"
+            exit 1
+          fi
+          
+          echo "✅ Version updated successfully"
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: |
+          npm ci --only=production
+          npm install sharp
+
+      - name: Build extension
+        run: |
+          echo "🏗️ Building extension..."
+          npm run build || node create-icons.js
+
+      - name: Create package
+        run: |
+          VERSION="${{ github.event.inputs.version }}"
+          npm run package || {
+            echo "📦 Creating package manually..."
+            PACKAGE_NAME="ai-cover-letter-generator-v${VERSION}.zip"
+            
+            # Clean development files
+            rm -f test-storage.js *.debug.md DEBUG.md GENERATION_DEBUG.md
+            rm -f INSTALLATION.md INSTRUCTIONS_FOR_IMPROVEMENTS.md 
+            rm -f PERSISTENCE_TESTING.md STORAGE_QUOTA_FIX.md
+            
+            # Create package
+            zip -r "$PACKAGE_NAME" \
+              manifest.json \
+              popup.html \
+              options.html \
+              js/ \
+              css/ \
+              icons/ \
+              -x "*.DS_Store" "*/.DS_Store" "*/Thumbs.db" \
+              -x "**/*.log" "**/*.tmp" "**/*.backup"
+              
+            echo "PACKAGE_NAME=$PACKAGE_NAME" >> $GITHUB_ENV
+          }
+
+      - name: Commit version change
+        run: |
+          VERSION="${{ github.event.inputs.version }}"
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add manifest.json
+          git commit -m "Release v$VERSION
+
+          🚀 Automated version bump for release
+          
+          - Updated manifest.json version to $VERSION
+          - Ready for Chrome Web Store submission
+          
+          Co-authored-by: github-actions[bot] <github-actions[bot]@users.noreply.github.com>"
+          git push
+
+      - name: Create release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ github.event.inputs.version }}
+          release_name: Chrome Extension v${{ github.event.inputs.version }}
+          body: |
+            ## AI Cover Letter Generator v${{ github.event.inputs.version }}
+            
+            🚀 **Chrome Web Store Ready Release!**
+            
+            This release was created manually and includes the latest features and bug fixes.
+            
+            ### 📦 Quick Install
+            1. Download `ai-cover-letter-generator-v${{ github.event.inputs.version }}.zip`
+            2. Extract the zip file
+            3. Load in Chrome: `chrome://extensions/` → Developer Mode → Load Unpacked
+            
+            ### 🔗 Resources
+            - 📖 [Setup Guide](https://netors.github.io/job-cover-letter-chrome-extension/support.html)
+            - 🏠 [Documentation](https://netors.github.io/job-cover-letter-chrome-extension/)
+            - 🐛 [Issues](https://github.com/netors/job-cover-letter-chrome-extension/issues)
+            
+            ### Requirements
+            - Chrome browser with Developer Mode
+            - OpenAI or Anthropic API key
+            
+            ---
+            
+            🤖 **Built with GitHub Actions**
+          draft: false
+          prerelease: ${{ github.event.inputs.prerelease }}
+
+      - name: Upload release asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ${{ env.PACKAGE_NAME }}
+          asset_name: ${{ env.PACKAGE_NAME }}
+          asset_content_type: application/zip

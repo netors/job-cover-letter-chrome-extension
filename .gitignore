@@ -138,10 +138,12 @@ docs/drafts/
 .local/
 local/
 
-# Package files
-*.zip
+# Package files and build artifacts
+ai-cover-letter-generator*.zip
 *.tar.gz
 *.rar
+dist/
+build/
 
 # Editor swap files
 *.swp
