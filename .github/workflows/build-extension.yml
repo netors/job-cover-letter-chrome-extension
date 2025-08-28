@@ -21,6 +21,11 @@ on:
       - 'icons/**'
   workflow_dispatch:
 
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
 jobs:
   detect-version:
     name: Detect Version Change
@@ -33,6 +38,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
+          token: ${{ secrets.GITHUB_TOKEN }}
           fetch-depth: 2
 
       - name: Check version change
@@ -83,6 +89,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -185,19 +193,17 @@ jobs:
 
       - name: Create release (main branch only)
         if: needs.detect-version.outputs.should_release == 'true' && github.ref == 'refs/heads/main'
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: softprops/action-gh-release@v1
         with:
           tag_name: v${{ env.VERSION }}
-          release_name: Chrome Extension v${{ env.VERSION }}
+          name: Chrome Extension v${{ env.VERSION }}
           body: |
             ## AI Cover Letter Generator v${{ env.VERSION }}
             
             🚀 **Ready for Chrome Web Store submission!**
             
             ### 📦 Installation
-            1. Download the `ai-cover-letter-generator-v${{ env.VERSION }}.zip` file
+            1. Download the `${{ env.PACKAGE_NAME }}` file
             2. Extract the zip file
             3. Open Chrome and go to `chrome://extensions/`
             4. Enable "Developer mode" (top right toggle)
@@ -220,17 +226,8 @@ jobs:
             **Built with GitHub Actions** 🤖
           draft: false
           prerelease: false
-
-      - name: Upload release asset
-        if: needs.detect-version.outputs.should_release == 'true' && github.ref == 'refs/heads/main'
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ${{ env.PACKAGE_NAME }}
-          asset_name: ${{ env.PACKAGE_NAME }}
-          asset_content_type: application/zip
+          files: ${{ env.PACKAGE_NAME }}
+          token: ${{ secrets.GITHUB_TOKEN }}
 
   comment-pr:
     name: Comment on PR

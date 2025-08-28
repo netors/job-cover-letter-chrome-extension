@@ -13,6 +13,12 @@ on:
         default: false
         type: boolean
 
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+  repository-projects: write
+
 jobs:
   manual-release:
     name: Create Manual Release
@@ -21,6 +27,9 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
 
       - name: Validate version format
         run: |
@@ -68,34 +77,45 @@ jobs:
       - name: Create package
         run: |
           VERSION="${{ github.event.inputs.version }}"
-          npm run package || {
-            echo "📦 Creating package manually..."
-            PACKAGE_NAME="ai-cover-letter-generator-v${VERSION}.zip"
+          PACKAGE_NAME="ai-cover-letter-generator-v${VERSION}.zip"
+          
+          echo "📦 Creating package: $PACKAGE_NAME"
+          
+          # Clean development files
+          rm -f test-storage.js *.debug.md DEBUG.md GENERATION_DEBUG.md
+          rm -f INSTALLATION.md INSTRUCTIONS_FOR_IMPROVEMENTS.md 
+          rm -f PERSISTENCE_TESTING.md STORAGE_QUOTA_FIX.md
+          
+          # Create package
+          zip -r "$PACKAGE_NAME" \
+            manifest.json \
+            popup.html \
+            options.html \
+            js/ \
+            css/ \
+            icons/ \
+            -x "*.DS_Store" "*/.DS_Store" "*/Thumbs.db" \
+            -x "**/*.log" "**/*.tmp" "**/*.backup" \
+            -x "icons/*.svg"
             
-            # Clean development files
-            rm -f test-storage.js *.debug.md DEBUG.md GENERATION_DEBUG.md
-            rm -f INSTALLATION.md INSTRUCTIONS_FOR_IMPROVEMENTS.md 
-            rm -f PERSISTENCE_TESTING.md STORAGE_QUOTA_FIX.md
-            
-            # Create package
-            zip -r "$PACKAGE_NAME" \
-              manifest.json \
-              popup.html \
-              options.html \
-              js/ \
-              css/ \
-              icons/ \
-              -x "*.DS_Store" "*/.DS_Store" "*/Thumbs.db" \
-              -x "**/*.log" "**/*.tmp" "**/*.backup"
-              
-            echo "PACKAGE_NAME=$PACKAGE_NAME" >> $GITHUB_ENV
-          }
+          # Verify package was created
+          if [ ! -f "$PACKAGE_NAME" ]; then
+            echo "❌ Failed to create package"
+            exit 1
+          fi
+          
+          echo "✅ Package created successfully"
+          ls -lh "$PACKAGE_NAME"
+          
+          # Set environment variables for later steps
+          echo "PACKAGE_NAME=$PACKAGE_NAME" >> $GITHUB_ENV
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
 
       - name: Commit version change
         run: |
           VERSION="${{ github.event.inputs.version }}"
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "github-actions[bot]"
           git add manifest.json
           git commit -m "Release v$VERSION
 
@@ -105,25 +125,28 @@ jobs:
           - Ready for Chrome Web Store submission
           
           Co-authored-by: github-actions[bot] <github-actions[bot]@users.noreply.github.com>"
-          git push
+          
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: main
 
       - name: Create release
         id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: softprops/action-gh-release@v1
         with:
-          tag_name: v${{ github.event.inputs.version }}
-          release_name: Chrome Extension v${{ github.event.inputs.version }}
+          tag_name: v${{ env.VERSION }}
+          name: Chrome Extension v${{ env.VERSION }}
           body: |
-            ## AI Cover Letter Generator v${{ github.event.inputs.version }}
+            ## AI Cover Letter Generator v${{ env.VERSION }}
             
             🚀 **Chrome Web Store Ready Release!**
             
             This release was created manually and includes the latest features and bug fixes.
             
             ### 📦 Quick Install
-            1. Download `ai-cover-letter-generator-v${{ github.event.inputs.version }}.zip`
+            1. Download `${{ env.PACKAGE_NAME }}`
             2. Extract the zip file
             3. Load in Chrome: `chrome://extensions/` → Developer Mode → Load Unpacked
             
@@ -136,18 +159,14 @@ jobs:
             - Chrome browser with Developer Mode
             - OpenAI or Anthropic API key
             
+            ### 📊 Package Info
+            - **Size**: $(ls -lh ${{ env.PACKAGE_NAME }} | awk '{print $5}')
+            - **Contents**: Extension files ready for Chrome Web Store
+            
             ---
             
             🤖 **Built with GitHub Actions**
           draft: false
           prerelease: ${{ github.event.inputs.prerelease }}
-
-      - name: Upload release asset
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ${{ env.PACKAGE_NAME }}
-          asset_name: ${{ env.PACKAGE_NAME }}
-          asset_content_type: application/zip
+          files: ${{ env.PACKAGE_NAME }}
+          token: ${{ secrets.GITHUB_TOKEN }}
