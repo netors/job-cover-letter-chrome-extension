@@ -4,7 +4,7 @@
 
 A powerful Chrome extension that automatically generates personalized cover letters from job descriptions using cutting-edge AI technology from OpenAI and Anthropic.
 
-> **Status**: Ready for Chrome Web Store publication • **Version**: 1.0.0 • **License**: MIT
+> **Status**: Chrome Web Store Compliant • **Version**: 1.0.0 • **License**: MIT
 
 ## ✨ Features
 
@@ -338,7 +338,11 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 📋 Changelog
 
-### v1.0.0 (Current - August 2025) - Chrome Web Store Ready
+### v1.0.0 (Current - August 2025) - Chrome Web Store Compliant
+- ✅ **Chrome Web Store Compliance**: Removed broad host permissions for faster approval
+- ✅ **User-Activated Injection**: Extension now only activates when user clicks the icon  
+- ✅ **Manual Script Injection**: Improved security with on-demand content script loading
+- ✅ **Enhanced Privacy**: No automatic page scanning, scripts only run when requested
 - ✅ **Dual AI Provider Support**: Added Anthropic Claude integration alongside OpenAI
 - ✅ **Enhanced History Management**: Clickable job links, AI provider badges, and pin functionality  
 - ✅ **Professional PDF Export**: Proper PDF generation with print-optimized formatting
