@@ -994,19 +994,91 @@ chrome.runtime.onInstalled.addListener(() => {
   });
 });
 
-chrome.action.onClicked.addListener((tab) => {
-  chrome.tabs.sendMessage(tab.id, { action: 'checkJobPage' }, (response) => {
-    if (chrome.runtime.lastError) {
-      console.error(chrome.runtime.lastError);
+// ===== MANUAL SCRIPT INJECTION ON USER CLICK =====
+// Chrome Web Store compliance: Only inject scripts when user actively clicks the extension
+chrome.action.onClicked.addListener(async (tab) => {
+  console.log('🖱️ Extension icon clicked, injecting content script...');
+  
+  try {
+    // Check if content script is already injected
+    const results = await chrome.scripting.executeScript({
+      target: { tabId: tab.id },
+      function: () => {
+        return window.aiCoverLetterExtensionInjected === true;
+      }
+    });
+    
+    if (results[0]?.result) {
+      console.log('✅ Content script already injected, checking job page...');
+      // Content script already exists, just check for job content
+      chrome.tabs.sendMessage(tab.id, { action: 'checkJobPage' }, (response) => {
+        if (chrome.runtime.lastError) {
+          console.warn('Could not communicate with content script:', chrome.runtime.lastError);
+          return;
+        }
+        
+        if (!response?.isJobPage) {
+          chrome.notifications.create({
+            type: 'basic',
+            iconUrl: '/icons/icon128.png',
+            title: 'AI Cover Letter Generator',
+            message: 'No job description detected on this page. Please navigate to a job listing and click the extension again.'
+          });
+        }
+      });
       return;
     }
-    if (!response?.isJobPage) {
-      chrome.notifications.create({
-        type: 'basic',
-        iconUrl: '/icons/icon128.png',
-        title: 'AI Cover Letter Generator',
-        message: 'No job description detected on this page. Please navigate to a job listing.'
+    
+    console.log('📋 Injecting content script and CSS...');
+    
+    // Inject the content script
+    await chrome.scripting.executeScript({
+      target: { tabId: tab.id },
+      files: ["js/content-script.js"]
+    });
+    
+    // Inject CSS if needed
+    await chrome.scripting.insertCSS({
+      target: { tabId: tab.id },
+      files: ["css/content.css"]
+    });
+    
+    // Set flag to prevent double injection
+    await chrome.scripting.executeScript({
+      target: { tabId: tab.id },
+      function: () => {
+        window.aiCoverLetterExtensionInjected = true;
+      }
+    });
+    
+    console.log('✅ Content script injected successfully');
+    
+    // Give the content script a moment to initialize, then check for job content
+    setTimeout(() => {
+      chrome.tabs.sendMessage(tab.id, {action: 'checkJobPage'}, (response) => {
+        if (chrome.runtime.lastError) {
+          console.warn('Could not communicate with content script:', chrome.runtime.lastError);
+          return;
+        }
+        
+        if (!response?.isJobPage) {
+          chrome.notifications.create({
+            type: 'basic',
+            iconUrl: '/icons/icon128.png',
+            title: 'AI Cover Letter Generator',
+            message: 'No job description detected on this page. Please navigate to a job listing and click the extension again.'
+          });
+        }
       });
-    }
-  });
+    }, 500);
+    
+  } catch (error) {
+    console.error('❌ Error injecting content script:', error);
+    chrome.notifications.create({
+      type: 'basic',
+      iconUrl: '/icons/icon128.png',
+      title: 'AI Cover Letter Generator - Error',
+      message: 'Could not inject content script. Please refresh the page and try again.'
+    });
+  }
 });
