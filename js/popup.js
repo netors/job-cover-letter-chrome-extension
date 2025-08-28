@@ -154,13 +154,29 @@ class PopupManager {
     console.log('✅ Set loading state');
 
     try {
-      // Add a small delay to ensure the loading state is visible
-      await new Promise(resolve => setTimeout(resolve, 300));
-      console.log('✅ Loading delay complete');
+      // First, inject content script if needed (Chrome Web Store compliance)
+      console.log('🔄 Ensuring content script is injected...');
+      statusText.textContent = 'Initializing extension...';
       
-      console.log('📤 Sending checkJobPage message to tab:', this.currentTab.id);
+      const injectionResult = await chrome.runtime.sendMessage({
+        action: 'injectContentScript',
+        tabId: this.currentTab.id
+      });
+      
+      if (!injectionResult.success) {
+        throw new Error(`Content script injection failed: ${injectionResult.error}`);
+      }
+      
+      console.log('✅ Content script injection result:', injectionResult);
+      
+      // Add a delay to ensure content script is initialized
+      statusText.textContent = 'Detecting job description...';
+      await new Promise(resolve => setTimeout(resolve, 500));
+      console.log('✅ Initialization delay complete');
+      
+      console.log('📤 Sending forceDetection message to tab:', this.currentTab.id);
       const response = await chrome.tabs.sendMessage(this.currentTab.id, { 
-        action: 'checkJobPage' 
+        action: 'forceDetection' 
       });
       console.log('📥 checkJobPage response:', response);
 
@@ -244,18 +260,29 @@ class PopupManager {
         domainDisplay = '';
       }
       
-      // Get AI provider icon and info
+      // Get AI provider icon and info with model
       const provider = item.provider || 'openai';
       const model = item.model || (provider === 'claude' ? 'claude-3-5-sonnet-20241022' : 'gpt-4o-mini');
       let providerIcon = '';
       let providerTitle = '';
+      let providerDisplayName = '';
       
       if (provider === 'claude') {
         providerIcon = '🤖';
-        providerTitle = `Generated with Claude (${model})`;
+        providerDisplayName = 'Claude';
+        // Simplify Claude model names for display
+        const modelDisplay = model.includes('sonnet') ? 'Sonnet' : 
+                           model.includes('haiku') ? 'Haiku' : 
+                           model.includes('opus') ? 'Opus' : 'Claude';
+        providerTitle = `Generated with Claude ${modelDisplay} (${model})`;
       } else {
         providerIcon = '🧠';
-        providerTitle = `Generated with OpenAI (${model})`;
+        providerDisplayName = 'OpenAI';
+        // Simplify OpenAI model names for display
+        const modelDisplay = model.includes('gpt-4o-mini') ? 'GPT-4o Mini' :
+                           model.includes('gpt-4o') ? 'GPT-4o' :
+                           model.includes('gpt-3.5') ? 'GPT-3.5' : 'GPT';
+        providerTitle = `Generated with ${modelDisplay} (${model})`;
       }
       
       return `
@@ -267,13 +294,20 @@ class PopupManager {
             <div class="history-meta">
               <time>${new Date(item.generatedAt).toLocaleDateString()}</time>
               <span class="ai-provider-badge" title="${providerTitle}">
-                ${providerIcon} ${provider === 'claude' ? 'Claude' : 'OpenAI'}
+                ${providerIcon} ${providerDisplayName}
+                <span class="model-name">${provider === 'claude' ? 
+                  (model.includes('sonnet') ? 'Sonnet' : model.includes('haiku') ? 'Haiku' : 'Claude') : 
+                  (model.includes('gpt-4o-mini') ? '4o-mini' : model.includes('gpt-4o') ? '4o' : '3.5')
+                }</span>
               </span>
             </div>
           </div>
           <div class="history-actions">
             <button class="pin-btn" data-id="${item.id}" title="${isPinned ? 'Unpin' : 'Pin to top'}">
               ${isPinned ? '📌' : '📍'}
+            </button>
+            <button class="delete-btn" data-id="${item.id}" title="Delete this cover letter">
+              🗑️
             </button>
             <button class="view-btn" data-id="${item.id}">View</button>
           </div>
@@ -298,6 +332,18 @@ class PopupManager {
         e.stopPropagation();
         const id = e.target.dataset.id;
         this.togglePin(id);
+      });
+    });
+
+    // Add event listeners for delete buttons
+    historyList.querySelectorAll('.delete-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const id = e.target.dataset.id;
+        const item = history.find(h => h.id === id);
+        if (item && confirm(`Delete cover letter for "${item.jobTitle}" at ${item.company}?`)) {
+          this.deleteCoverLetter(id);
+        }
       });
     });
   }
@@ -346,6 +392,31 @@ class PopupManager {
     } catch (error) {
       console.error('Error toggling pin:', error);
       this.showNotification('Failed to pin item', 'error');
+    }
+  }
+
+  async deleteCoverLetter(itemId) {
+    try {
+      const stored = await chrome.runtime.sendMessage({
+        action: 'getStorageData',
+        keys: ['history']
+      });
+      const history = stored.history || [];
+      
+      // Filter out the item to delete
+      const updatedHistory = history.filter(item => item.id !== itemId);
+      
+      await chrome.runtime.sendMessage({
+        action: 'setStorageData',
+        data: { history: updatedHistory }
+      });
+      
+      this.showNotification('Cover letter deleted', 'success');
+      await this.loadHistory(); // Reload to show updated list
+      this.updateUsageStats(); // Update usage count
+    } catch (error) {
+      console.error('Error deleting cover letter:', error);
+      this.showNotification('Failed to delete cover letter', 'error');
     }
   }
 
