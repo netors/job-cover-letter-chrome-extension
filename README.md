@@ -356,13 +356,13 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - ✅ **Multi-site Support**: Works on LinkedIn, Indeed, Glassdoor, and 100+ job sites
 
 ### Development History
-- ✅ **Dec 2024**: Storage system overhaul for reliability
-- ✅ **Dec 2024**: Claude API integration with proper message formatting  
-- ✅ **Dec 2024**: History enhancements with URL tracking
-- ✅ **Dec 2024**: PDF download fixes for service worker compatibility
-- ✅ **Dec 2024**: UI/UX improvements and date handling
-- ✅ **Dec 2024**: Enhanced job detection with retry mechanisms
-- ✅ **Dec 2024**: Core functionality and OpenAI integration
+- ✅ **Aug 2025**: Storage system overhaul for reliability
+- ✅ **Aug 2025**: Claude API integration with proper message formatting  
+- ✅ **Aug 2025**: History enhancements with URL tracking
+- ✅ **Aug 2025**: PDF download fixes for service worker compatibility
+- ✅ **Aug 2025**: UI/UX improvements and date handling
+- ✅ **Aug 2025**: Enhanced job detection with retry mechanisms
+- ✅ **Aug 2025**: Core functionality and OpenAI integration
 
 ### 🚀 Planned Features (v1.1.0+)
 - **Template System**: Custom cover letter templates and formats
