@@ -54,7 +54,7 @@ A powerful Chrome extension that automatically generates personalized cover lett
 ## 📦 Installation
 
 ### Method 1: Chrome Web Store (Recommended)
-🏪 **[Install from Chrome Web Store](https://chrome.google.com/webstore/category/extensions)** (Coming Soon)
+🏪 **[Install from Chrome Web Store](https://chromewebstore.google.com/detail/ai-cover-letter-generator/gppfoiidnpjimfegnmhepmlfpmbbdcpj)**
 
 ### Method 2: Developer Mode (Available Now)
 
